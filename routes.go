@@ -32,9 +32,9 @@ func (fv *routes) Set(v string) error {
 	}
 	i := strings.Index(v, separator)
 	var route, path string
+	var err error
 	if i <= 0 {
 		path = strings.TrimPrefix(v, "=")
-		var err error
 		path, err = filepath.Abs(path)
 		if err != nil {
 			return err
@@ -43,6 +43,10 @@ func (fv *routes) Set(v string) error {
 	} else {
 		route = v[:i]
 		path = v[i+len(separator):]
+		path, err = filepath.Abs(path)
+		if err != nil {
+			return err
+		}
 		if !strings.HasPrefix(route, "/") {
 			route = "/" + route
 		}

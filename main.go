@@ -88,7 +88,8 @@ func server(addr string, routes routes) error {
 		log.Printf("serving local path %q on %q", path, route)
 	}
 
-	if _, ok := handlers[rootRoute]; !ok && len(routes.Values) > 0 {
+	_, rootRouteTaken := handlers[rootRoute]
+	if !rootRouteTaken {
 		route := routes.Values[0].Route
 		mux.Handle(rootRoute, http.RedirectHandler(route, http.StatusTemporaryRedirect))
 		log.Printf("redirecting to %q from %q", route, rootRoute)
