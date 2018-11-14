@@ -72,8 +72,7 @@ func server(addr string, routes routes) error {
 	paths := make(map[string]string)
 
 	if len(routes.Values) == 0 {
-		log.Printf("WARNING: no routes specified - every request will return %d (%s)", http.StatusNotFound, http.StatusText(http.StatusNotFound))
-		http.HandleFunc(rootRoute, http.NotFound)
+		routes.Set(".")
 	}
 
 	for _, route := range routes.Values {

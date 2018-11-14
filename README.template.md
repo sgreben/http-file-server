@@ -6,8 +6,6 @@
 
 ## Contents
 
-<!-- TOC -->
-
 - [Contents](#contents)
 - [Examples](#examples)
 - [Get it](#get-it)
@@ -15,13 +13,18 @@
     - [Pre-built binary](#pre-built-binary)
 - [Use it](#use-it)
 
-<!-- /TOC -->
-
-
 ## Examples
 
 ```sh
 $ http-file-server /tmp
+2018/11/13 23:00:03.946051 serving local path "/tmp" on "/tmp/"
+2018/11/13 23:00:03.946087 redirecting to "/tmp/" from "/"
+2018/11/13 23:00:03.946093 http-file-server listening on ":8080"
+```
+
+```sh
+$ cd /tmp
+$ http-file-server
 2018/11/13 23:00:03.946051 serving local path "/tmp" on "/tmp/"
 2018/11/13 23:00:03.946087 redirecting to "/tmp/" from "/"
 2018/11/13 23:00:03.946093 http-file-server listening on ":8080"

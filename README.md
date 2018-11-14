@@ -6,8 +6,6 @@
 
 ## Contents
 
-<!-- TOC -->
-
 - [Contents](#contents)
 - [Examples](#examples)
 - [Get it](#get-it)
@@ -15,13 +13,18 @@
     - [Pre-built binary](#pre-built-binary)
 - [Use it](#use-it)
 
-<!-- /TOC -->
-
-
 ## Examples
 
 ```sh
 $ http-file-server /tmp
+2018/11/13 23:00:03.946051 serving local path "/tmp" on "/tmp/"
+2018/11/13 23:00:03.946087 redirecting to "/tmp/" from "/"
+2018/11/13 23:00:03.946093 http-file-server listening on ":8080"
+```
+
+```sh
+$ cd /tmp
+$ http-file-server
 2018/11/13 23:00:03.946051 serving local path "/tmp" on "/tmp/"
 2018/11/13 23:00:03.946087 redirecting to "/tmp/" from "/"
 2018/11/13 23:00:03.946093 http-file-server listening on ":8080"
@@ -57,14 +60,14 @@ Or [download a binary](https://github.com/sgreben/http-file-server/releases/late
 
 ```sh
 # Linux
-curl -L https://github.com/sgreben/http-file-server/releases/download/1.1.0/http-file-server_1.1.0_linux_x86_64.tar.gz | tar xz
+curl -L https://github.com/sgreben/http-file-server/releases/download/1.2.0/http-file-server_1.2.0_linux_x86_64.tar.gz | tar xz
 
 # OS X
-curl -L https://github.com/sgreben/http-file-server/releases/download/1.1.0/http-file-server_1.1.0_osx_x86_64.tar.gz | tar xz
+curl -L https://github.com/sgreben/http-file-server/releases/download/1.2.0/http-file-server_1.2.0_osx_x86_64.tar.gz | tar xz
 
 # Windows
-curl -LO https://github.com/sgreben/http-file-server/releases/download/1.1.0/http-file-server_1.1.0_windows_x86_64.zip
-unzip versions_1.1.0_windows_x86_64.zip
+curl -LO https://github.com/sgreben/http-file-server/releases/download/1.2.0/http-file-server_1.2.0_windows_x86_64.zip
+unzip versions_1.2.0_windows_x86_64.zip
 ```
 
 ## Use it
