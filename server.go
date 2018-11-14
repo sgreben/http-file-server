@@ -69,7 +69,7 @@ func (f *fileHandler) serveDir(w http.ResponseWriter, r *http.Request, dirPath s
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	title, _ := filepath.Rel(f.path, dirPath)
 	title = filepath.Join(filepath.Base(f.path), title)
-	fmt.Fprintf(w, "<h1>%s</h1>\n", title)
+	fmt.Fprintf(w, "<h1>%s</h1>\n", htmlReplacer.Replace(title))
 	fmt.Fprintf(w, "<ul>\n")
 	for _, d := range files {
 		name := d.Name()
