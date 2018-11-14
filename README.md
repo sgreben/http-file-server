@@ -17,33 +17,33 @@
 
 ```sh
 $ http-file-server /tmp
-2018/11/13 23:00:03.946051 serving local path "/tmp" on "/tmp/"
-2018/11/13 23:00:03.946087 redirecting to "/tmp/" from "/"
-2018/11/13 23:00:03.946093 http-file-server listening on ":8080"
+2018/11/13 23:00:03 serving local path "/tmp" on "/tmp/"
+2018/11/13 23:00:03 redirecting to "/tmp/" from "/"
+2018/11/13 23:00:03 http-file-server listening on ":8080"
 ```
 
 ```sh
 $ cd /tmp
 $ http-file-server
-2018/11/13 23:00:03.946051 serving local path "/tmp" on "/tmp/"
-2018/11/13 23:00:03.946087 redirecting to "/tmp/" from "/"
-2018/11/13 23:00:03.946093 http-file-server listening on ":8080"
+2018/12/13 03:18:00 serving local path "/tmp" on "/tmp/"
+2018/12/13 03:18:00 redirecting to "/tmp/" from "/"
+2018/12/13 03:18:00 http-file-server listening on ":8080"
 ```
 
 ```sh
 $ http-file-server -p 1234 /1=/tmp /2=/var/tmp
-2018/11/13 23:01:44.502240 serving local path "/tmp" on "/1/"
-2018/11/13 23:01:44.502274 serving local path "/var/tmp" on "/2/"
-2018/11/13 23:01:44.502280 redirecting to "/1/" from "/"
-2018/11/13 23:01:44.502285 http-file-server listening on ":1234"
+2018/11/13 23:01:44 serving local path "/tmp" on "/1/"
+2018/11/13 23:01:44 serving local path "/var/tmp" on "/2/"
+2018/11/13 23:01:44 redirecting to "/1/" from "/"
+2018/11/13 23:01:44 http-file-server listening on ":1234"
 ```
 
 ```sh
 $ export PORT=9999
 $ http-file-server /abc/def/ghi=/tmp
-2018/11/13 23:05:52.291485 serving local path "/tmp" on "/abc/def/ghi/"
-2018/11/13 23:05:52.291606 redirecting to "/abc/def/ghi/" from "/"
-2018/11/13 23:05:52.291611 http-file-server listening on ":9999"
+2018/11/13 23:05:52 serving local path "/tmp" on "/abc/def/ghi/"
+2018/11/13 23:05:52 redirecting to "/abc/def/ghi/" from "/"
+2018/11/13 23:05:52 http-file-server listening on ":9999"
 ```
 
 ## Get it
