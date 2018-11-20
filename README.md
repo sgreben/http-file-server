@@ -1,6 +1,6 @@
 # http-file-server
 
-`http-file-server` is a dependency-free HTTP file server.
+`http-file-server` is a dependency-free HTTP file server. Beyond directory listings and file downloads, it lets you download a whole directory as as `.zip` or `.tar.gz` (generated on-the-fly).
 
 ![screenshot](doc/screenshot.gif)
 
@@ -60,14 +60,14 @@ Or [download a binary](https://github.com/sgreben/http-file-server/releases/late
 
 ```sh
 # Linux
-curl -L https://github.com/sgreben/http-file-server/releases/download/1.2.2/http-file-server_1.2.2_linux_x86_64.tar.gz | tar xz
+curl -L https://github.com/sgreben/http-file-server/releases/download/1.3.0/http-file-server_1.3.0_linux_x86_64.tar.gz | tar xz
 
 # OS X
-curl -L https://github.com/sgreben/http-file-server/releases/download/1.2.2/http-file-server_1.2.2_osx_x86_64.tar.gz | tar xz
+curl -L https://github.com/sgreben/http-file-server/releases/download/1.3.0/http-file-server_1.3.0_osx_x86_64.tar.gz | tar xz
 
 # Windows
-curl -LO https://github.com/sgreben/http-file-server/releases/download/1.2.2/http-file-server_1.2.2_windows_x86_64.zip
-unzip versions_1.2.2_windows_x86_64.zip
+curl -LO https://github.com/sgreben/http-file-server/releases/download/1.3.0/http-file-server_1.3.0_windows_x86_64.zip
+unzip versions_1.3.0_windows_x86_64.zip
 ```
 
 ## Use it

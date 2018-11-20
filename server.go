@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"net/url"
 	"os"
-	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -21,17 +21,86 @@ const (
 	zipContentType = "application/zip"
 )
 
+const directoryListingTemplateText = `
+<html>
+<head>
+	<title>{{ .Title }}</title>
+	<style>
+		.number { text-align: right; }
+		.text { text-align: left; }
+	</style>
+</head>
+<body>
+<h1>{{ .Title }}</h1>
+{{ if .Files }}
+<ul>
+	<li><a href="{{ .TarGzURL }}">Entire directory as .tar.gz</a></li>
+	<li><a href="{{ .ZipURL }}">Entire directory as .zip</a></li>
+</ul>
+{{ end }}
+<table>
+	<thead>
+		<th class=text>Name</th>
+		<th class=number>Size</th>
+		<th class=number>Size (bytes)</th>
+	</thead>
+	<tbody>
+	{{ range .Files }}
+	<tr>
+		<td class=text><a href="{{ .URL.String }}">{{ .Name }}</td>
+		<td class=number>{{ if (not .IsDir) }}<pre>{{.Size.String }}</pre>{{ end }}</td>
+		<td class=number>{{ if (not .IsDir) }}<pre>{{ .Size | printf "%d" }}</pre>{{ end }}</td>
+	</tr>
+	{{ end }}
+	</tbody>
+</table>
+</body>
+</html>
+`
+
+type fileSizeBytes int64
+
+func (f fileSizeBytes) String() string {
+	const (
+		KB = 1024
+		MB = 1024 * KB
+		GB = 1024 * MB
+	)
+	switch {
+	case f < KB:
+		return fmt.Sprintf("%d B", f)
+	case f < MB:
+		return fmt.Sprintf("%d KB", f/KB)
+	case f < GB:
+		return fmt.Sprintf("%d MB", f/MB)
+	case f >= GB:
+		fallthrough
+	default:
+		return fmt.Sprintf("%d GB", f/GB)
+	}
+}
+
+type directoryListingFileData struct {
+	Name  string
+	Size  fileSizeBytes
+	IsDir bool
+	URL   *url.URL
+}
+
+type directoryListingData struct {
+	Title    string
+	ZipURL   *url.URL
+	TarGzURL *url.URL
+	Files    []directoryListingFileData
+}
+
 type fileHandler struct {
 	route string
 	path  string
 }
 
-var htmlReplacer = strings.NewReplacer(
-	"&", "&amp;",
-	"<", "&lt;",
-	">", "&gt;",
-	`"`, "&#34;",
-	"'", "&#39;",
+var (
+	directoryListingTemplate = template.Must(template.New("").Parse(directoryListingTemplateText))
 )
 
 func (f *fileHandler) serveStatus(w http.ResponseWriter, r *http.Request, status int) {
@@ -65,37 +134,51 @@ func (f *fileHandler) serveDir(w http.ResponseWriter, r *http.Request, dirPath s
 		return
 	}
 	sort.Slice(files, func(i, j int) bool { return files[i].Name() < files[j].Name() })
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	title, _ := filepath.Rel(f.path, dirPath)
-	title = filepath.Join(filepath.Base(f.path), title)
-	fmt.Fprintf(w, "<h1>%s</h1>\n", htmlReplacer.Replace(title))
-	fmt.Fprintf(w, "<ul>\n")
-	for _, d := range files {
-		name := d.Name()
-		if d.IsDir() {
-			name += "/"
-		}
-		url := url.URL{Path: path.Join(r.URL.Path, name)}
-		fmt.Fprintf(w, "<li><a href=\"%s\">%s</a></li>\n", url.String(), htmlReplacer.Replace(name))
-	}
-	fmt.Fprintf(w, "</ul>\n")
-	if len(files) > 0 {
-		url := url.URL{Path: r.URL.Path}
-		q := url.Query()
-		q.Set(tarGzKey, tarGzValue)
-		url.RawQuery = q.Encode()
-		fmt.Fprintf(w, "<p>\n")
-		fmt.Fprintf(w, "<a href=\"%s\">Entire directory as .tar.gz</a>\n", url.String())
-		fmt.Fprintf(w, "</p>\n")
-		url.RawQuery = ""
-		q = url.Query()
-		q.Set(zipKey, zipValue)
-		url.RawQuery = q.Encode()
-		fmt.Fprintf(w, "<p>\n")
-		fmt.Fprintf(w, "<a href=\"%s\">Entire directory as .zip</a>\n", url.String())
-		fmt.Fprintf(w, "</p>\n")
-	}
+	directoryListingTemplate.Execute(w, directoryListingData{
+		Title: func() string {
+			relPath, _ := filepath.Rel(f.path, dirPath)
+			return filepath.Join(filepath.Base(f.path), relPath)
+		}(),
+		TarGzURL: func() *url.URL {
+			url := *r.URL
+			q := url.Query()
+			q.Set(tarGzKey, tarGzValue)
+			url.RawQuery = q.Encode()
+			return &url
+		}(),
+		ZipURL: func() *url.URL {
+			url := *r.URL
+			q := url.Query()
+			q.Set(zipKey, zipValue)
+			url.RawQuery = q.Encode()
+			return &url
+		}(),
+		Files: func() (out []directoryListingFileData) {
+			for _, d := range files {
+				name := d.Name()
+				if d.IsDir() {
+					name += "/"
+				}
+				fileData := directoryListingFileData{
+					Name:  name,
+					IsDir: d.IsDir(),
+					Size:  fileSizeBytes(d.Size()),
+					URL: func() *url.URL {
+						url := *r.URL
+						path := filepath.Join(url.Path, name)
+						if d.IsDir() {
+							path += "/"
+						}
+						url.Path = path
+						return &url
+					}(),
+				}
+				out = append(out, fileData)
+			}
+			return out
+		}(),
+	})
 }
 
 // ServeHTTP is http.Handler.ServeHTTP
