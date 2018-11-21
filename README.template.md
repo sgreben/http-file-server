@@ -2,7 +2,7 @@
 
 `http-file-server` is a dependency-free HTTP file server. Beyond directory listings and file downloads, it lets you download a whole directory as as `.zip` or `.tar.gz` (generated on-the-fly).
 
-![screenshot](doc/screenshot.gif)
+![screenshot](doc/screenshot.png)
 
 ## Contents
 
