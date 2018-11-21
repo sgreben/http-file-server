@@ -60,14 +60,14 @@ Or [download a binary](https://github.com/sgreben/http-file-server/releases/late
 
 ```sh
 # Linux
-curl -L https://github.com/sgreben/http-file-server/releases/download/1.3.0/http-file-server_1.3.0_linux_x86_64.tar.gz | tar xz
+curl -L https://github.com/sgreben/http-file-server/releases/download/1.3.1/http-file-server_1.3.1_linux_x86_64.tar.gz | tar xz
 
 # OS X
-curl -L https://github.com/sgreben/http-file-server/releases/download/1.3.0/http-file-server_1.3.0_osx_x86_64.tar.gz | tar xz
+curl -L https://github.com/sgreben/http-file-server/releases/download/1.3.1/http-file-server_1.3.1_osx_x86_64.tar.gz | tar xz
 
 # Windows
-curl -LO https://github.com/sgreben/http-file-server/releases/download/1.3.0/http-file-server_1.3.0_windows_x86_64.zip
-unzip versions_1.3.0_windows_x86_64.zip
+curl -LO https://github.com/sgreben/http-file-server/releases/download/1.3.1/http-file-server_1.3.1_windows_x86_64.zip
+unzip versions_1.3.1_windows_x86_64.zip
 ```
 
 ## Use it
