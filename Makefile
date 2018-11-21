@@ -1,4 +1,4 @@
-VERSION = 1.3.1
+VERSION = 1.3.2
 
 APP      := http-file-server
 PACKAGES := $(shell go list -f {{.Dir}} ./...)
