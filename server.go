@@ -25,35 +25,33 @@ const directoryListingTemplateText = `
 <html>
 <head>
 	<title>{{ .Title }}</title>
-	<style>
-		.number { text-align: right; }
-		.text { text-align: left; }
-	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>a{display:block;padding:.5em;}.highlight,tbody tr:nth-child(odd){background:#eee;}.number{text-align:right;}.text{text-align:left;}canvas,table,a{width:100%;max-width:100%;word-break:break-all;}</style>
 </head>
 <body>
 <h1>{{ .Title }}</h1>
 {{ if .Files }}
-<ul>
-	<li><a href="{{ .TarGzURL }}">Entire directory as .tar.gz</a></li>
-	<li><a href="{{ .ZipURL }}">Entire directory as .zip</a></li>
-</ul>
-{{ end }}
 <table>
 	<thead>
-		<th class=text>Name</th>
-		<th class=number>Size</th>
+		<th></th>
 		<th class=number>Size (bytes)</th>
 	</thead>
 	<tbody>
-	{{ range .Files }}
+	<tr><td colspan=2><a href="{{ .TarGzURL }}">.tar.gz of all files</a></td></tr>
+	<tr><td colspan=2><a href="{{ .ZipURL }}">.zip of all files</a></td></tr>
+	{{- range .Files }}
 	<tr>
+		{{ if (not .IsDir) }}
 		<td class=text><a href="{{ .URL.String }}">{{ .Name }}</td>
-		<td class=number>{{ if (not .IsDir) }}<pre>{{.Size.String }}</pre>{{ end }}</td>
-		<td class=number>{{ if (not .IsDir) }}<pre>{{ .Size | printf "%d" }}</pre>{{ end }}</td>
+		<td class=number>{{.Size.String }} ({{ .Size | printf "%d" }})</td>
+		{{ else }}
+		<td colspan=2 class=text><a href="{{ .URL.String }}">{{ .Name }}</td>
+		{{ end }}
 	</tr>
-	{{ end }}
+	{{end -}}
 	</tbody>
 </table>
+{{ end }}
 </body>
 </html>
 `
@@ -68,15 +66,15 @@ func (f fileSizeBytes) String() string {
 	)
 	switch {
 	case f < KB:
-		return fmt.Sprintf("%d B", f)
+		return fmt.Sprintf("%d", f)
 	case f < MB:
-		return fmt.Sprintf("%d KB", f/KB)
+		return fmt.Sprintf("%dK", f/KB)
 	case f < GB:
-		return fmt.Sprintf("%d MB", f/MB)
+		return fmt.Sprintf("%dM", f/MB)
 	case f >= GB:
 		fallthrough
 	default:
-		return fmt.Sprintf("%d GB", f/GB)
+		return fmt.Sprintf("%dG", f/GB)
 	}
 }
 
