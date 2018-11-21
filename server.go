@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -65,17 +66,20 @@ func (f fileSizeBytes) String() string {
 		MB = 1024 * KB
 		GB = 1024 * MB
 	)
+	divBy := func(x int64) int {
+		return int(math.Round(float64(f) / float64(x)))
+	}
 	switch {
 	case f < KB:
 		return fmt.Sprintf("%d", f)
 	case f < MB:
-		return fmt.Sprintf("%dK", f/KB)
+		return fmt.Sprintf("%dK", divBy(KB))
 	case f < GB:
-		return fmt.Sprintf("%dM", f/MB)
+		return fmt.Sprintf("%dM", divBy(MB))
 	case f >= GB:
 		fallthrough
 	default:
-		return fmt.Sprintf("%dG", f/GB)
+		return fmt.Sprintf("%dG", divBy(GB))
 	}
 }
 
