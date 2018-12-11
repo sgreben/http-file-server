@@ -9,8 +9,8 @@
 - [Contents](#contents)
 - [Examples](#examples)
 - [Get it](#get-it)
-    - [Using `go get`](#using-go-get)
-    - [Pre-built binary](#pre-built-binary)
+  - [Using `go get`](#using-go-get)
+  - [Pre-built binary](#pre-built-binary)
 - [Use it](#use-it)
 
 ## Examples
@@ -67,7 +67,7 @@ curl -L https://github.com/sgreben/http-file-server/releases/download/1.3.3/http
 
 # Windows
 curl -LO https://github.com/sgreben/http-file-server/releases/download/1.3.3/http-file-server_1.3.3_windows_x86_64.zip
-unzip versions_1.3.3_windows_x86_64.zip
+unzip http-file-server_1.3.3_windows_x86_64.zip
 ```
 
 ## Use it

@@ -9,8 +9,8 @@
 - [Contents](#contents)
 - [Examples](#examples)
 - [Get it](#get-it)
-    - [Using `go get`](#using-go-get)
-    - [Pre-built binary](#pre-built-binary)
+  - [Using `go get`](#using-go-get)
+  - [Pre-built binary](#pre-built-binary)
 - [Use it](#use-it)
 
 ## Examples
@@ -67,7 +67,7 @@ curl -L https://github.com/sgreben/${APP}/releases/download/${VERSION}/${APP}_${
 
 # Windows
 curl -LO https://github.com/sgreben/${APP}/releases/download/${VERSION}/${APP}_${VERSION}_windows_x86_64.zip
-unzip versions_${VERSION}_windows_x86_64.zip
+unzip ${APP}_${VERSION}_windows_x86_64.zip
 ```
 
 ## Use it
