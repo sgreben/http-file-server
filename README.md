@@ -93,4 +93,7 @@ Usage of http-file-server:
     	(alias for -route)
   -route value
     	a route definition ROUTE=PATH (ROUTE defaults to basename of PATH if omitted)
+  -u	(alias for -uploads)
+  -uploads
+    	allow uploads (environment variable "UPLOADS")
 ```

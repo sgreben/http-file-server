@@ -13,19 +13,21 @@ import (
 )
 
 const (
-	defaultAddr     = ":8080"
-	addrEnvVarName  = "ADDR"
-	portEnvVarName  = "PORT"
-	quietEnvVarName = "QUIET"
-	rootRoute       = "/"
+	defaultAddr            = ":8080"
+	addrEnvVarName         = "ADDR"
+	portEnvVarName         = "PORT"
+	quietEnvVarName        = "QUIET"
+	allowUploadsEnvVarName = "UPLOADS"
+	rootRoute              = "/"
 )
 
 var (
-	addrFlag      = os.Getenv(addrEnvVarName)
-	portFlag64, _ = strconv.ParseInt(os.Getenv(portEnvVarName), 10, 64)
-	portFlag      = int(portFlag64)
-	quietFlag     bool
-	routesFlag    routes
+	addrFlag         = os.Getenv(addrEnvVarName)
+	portFlag64, _    = strconv.ParseInt(os.Getenv(portEnvVarName), 10, 64)
+	portFlag         = int(portFlag64)
+	quietFlag        = os.Getenv(quietEnvVarName) == "true"
+	allowUploadsFlag = os.Getenv(allowUploadsEnvVarName) == "true"
+	routesFlag       routes
 )
 
 func init() {
@@ -40,6 +42,8 @@ func init() {
 	flag.IntVar(&portFlag, "p", portFlag, "(alias for -port)")
 	flag.BoolVar(&quietFlag, "quiet", quietFlag, fmt.Sprintf("disable all log output (environment variable %q)", quietEnvVarName))
 	flag.BoolVar(&quietFlag, "q", quietFlag, "(alias for -quiet)")
+	flag.BoolVar(&allowUploadsFlag, "uploads", allowUploadsFlag, fmt.Sprintf("allow uploads (environment variable %q)", allowUploadsEnvVarName))
+	flag.BoolVar(&allowUploadsFlag, "u", allowUploadsFlag, "(alias for -uploads)")
 	flag.Var(&routesFlag, "route", routesFlag.help())
 	flag.Var(&routesFlag, "r", "(alias for -route)")
 	flag.Parse()
@@ -77,8 +81,9 @@ func server(addr string, routes routes) error {
 
 	for _, route := range routes.Values {
 		handlers[route.Route] = &fileHandler{
-			route: route.Route,
-			path:  route.Path,
+			route:       route.Route,
+			path:        route.Path,
+			allowUpload: allowUploadsFlag,
 		}
 		paths[route.Route] = route.Path
 	}
