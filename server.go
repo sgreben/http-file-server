@@ -246,7 +246,7 @@ func (f *fileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		f.serveZip(w, r, osPath)
 	case r.URL.Query().Get(tarGzKey) != "":
 		f.serveTarGz(w, r, osPath)
-	case info.IsDir() && r.Method == http.MethodPost:
+	case f.allowUpload && info.IsDir() && r.Method == http.MethodPost:
 		f.serveUploadTo(w, r, osPath)
 	case info.IsDir():
 		f.serveDir(w, r, osPath)

@@ -1,4 +1,4 @@
-VERSION = 1.4.1
+VERSION = 1.4.2
 
 APP      := http-file-server
 PACKAGES := $(shell go list -f {{.Dir}} ./...)
@@ -13,7 +13,6 @@ clean:
 
 # go get -u github.com/github/hub
 release: README.md zip
-	git reset
 	git add README.md
 	git add Makefile
 	git commit -m "Release $(VERSION)" || true
