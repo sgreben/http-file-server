@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"math"
 	"net/http"
 	"net/url"
@@ -224,6 +225,7 @@ func (f *fileHandler) serveUploadTo(w http.ResponseWriter, r *http.Request, osPa
 
 // ServeHTTP is http.Handler.ServeHTTP
 func (f *fileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("[%s] %s %s %s", f.path, r.RemoteAddr, r.Method, r.URL.String())
 	urlPath := r.URL.Path
 	if !strings.HasPrefix(urlPath, "/") {
 		urlPath = "/" + urlPath
