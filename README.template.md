@@ -12,7 +12,7 @@
   - [Serving $PWD at `/`](#serving-pwd-at-)
   - [Serving multiple paths, setting the HTTP port via CLI arguments](#serving-multiple-paths-setting-the-http-port-via-cli-arguments)
   - [Setting the HTTP port via environment variables](#setting-the-http-port-via-environment-variables)
-    - [Uploading files using cURL](#uploading-files-using-curl)
+  - [Uploading files using cURL](#uploading-files-using-curl)
 - [Get it](#get-it)
   - [Using `go get`](#using-go-get)
   - [Pre-built binary](#pre-built-binary)
@@ -59,7 +59,7 @@ $ http-file-server /abc/def/ghi=/tmp
 2018/11/13 23:05:52 http-file-server listening on ":9999"
 ```
 
-#### Uploading files using cURL
+### Uploading files using cURL
 
 ```sh
 $ ./http-file-server -uploads /=/path/to/serve

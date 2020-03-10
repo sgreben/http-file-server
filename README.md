@@ -12,7 +12,7 @@
   - [Serving $PWD at `/`](#serving-pwd-at-)
   - [Serving multiple paths, setting the HTTP port via CLI arguments](#serving-multiple-paths-setting-the-http-port-via-cli-arguments)
   - [Setting the HTTP port via environment variables](#setting-the-http-port-via-environment-variables)
-    - [Uploading files using cURL](#uploading-files-using-curl)
+  - [Uploading files using cURL](#uploading-files-using-curl)
 - [Get it](#get-it)
   - [Using `go get`](#using-go-get)
   - [Pre-built binary](#pre-built-binary)
@@ -59,7 +59,7 @@ $ http-file-server /abc/def/ghi=/tmp
 2018/11/13 23:05:52 http-file-server listening on ":9999"
 ```
 
-#### Uploading files using cURL
+### Uploading files using cURL
 
 ```sh
 $ ./http-file-server -uploads /=/path/to/serve
@@ -85,14 +85,14 @@ Or [download a binary](https://github.com/sgreben/http-file-server/releases/late
 
 ```sh
 # Linux
-curl -L https://github.com/sgreben/http-file-server/releases/download/1.5.2/http-file-server_1.5.2_linux_x86_64.tar.gz | tar xz
+curl -L https://github.com/sgreben/http-file-server/releases/download/1.5.3/http-file-server_1.5.3_linux_x86_64.tar.gz | tar xz
 
 # OS X
-curl -L https://github.com/sgreben/http-file-server/releases/download/1.5.2/http-file-server_1.5.2_osx_x86_64.tar.gz | tar xz
+curl -L https://github.com/sgreben/http-file-server/releases/download/1.5.3/http-file-server_1.5.3_osx_x86_64.tar.gz | tar xz
 
 # Windows
-curl -LO https://github.com/sgreben/http-file-server/releases/download/1.5.2/http-file-server_1.5.2_windows_x86_64.zip
-unzip http-file-server_1.5.2_windows_x86_64.zip
+curl -LO https://github.com/sgreben/http-file-server/releases/download/1.5.3/http-file-server_1.5.3_windows_x86_64.zip
+unzip http-file-server_1.5.3_windows_x86_64.zip
 ```
 
 ## Use it
