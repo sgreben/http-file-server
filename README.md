@@ -13,6 +13,7 @@
   - [Serving multiple paths, setting the HTTP port via CLI arguments](#serving-multiple-paths-setting-the-http-port-via-cli-arguments)
   - [Setting the HTTP port via environment variables](#setting-the-http-port-via-environment-variables)
   - [Uploading files using cURL](#uploading-files-using-curl)
+  - [HTTPS (SSL/TLS)](#https-ssltls)
 - [Get it](#get-it)
   - [Using `go get`](#using-go-get)
   - [Pre-built binary](#pre-built-binary)
@@ -71,6 +72,15 @@ $ ./http-file-server -uploads /=/path/to/serve
 curl -LF "file=@example.txt" localhost:8080/path/to/upload/to
 ```
 
+### HTTPS (SSL/TLS)
+
+To terminate SSL at the file server, set `-ssl-cert` (`SSL_CERTIFICATE`) and `-ssl-key` (`SSL_KEY`) to the respective files' paths:
+
+```sh
+$ ./http-file-server -port 8443 -ssl-cert server.crt -ssl-key server.key
+2020/03/10 22:00:54 http-file-server (HTTPS) listening on ":8443"
+```
+
 ## Get it
 
 ### Using `go get`
@@ -85,14 +95,14 @@ Or [download a binary](https://github.com/sgreben/http-file-server/releases/late
 
 ```sh
 # Linux
-curl -L https://github.com/sgreben/http-file-server/releases/download/1.5.3/http-file-server_1.5.3_linux_x86_64.tar.gz | tar xz
+curl -L https://github.com/sgreben/http-file-server/releases/download/1.6.0/http-file-server_1.6.0_linux_x86_64.tar.gz | tar xz
 
 # OS X
-curl -L https://github.com/sgreben/http-file-server/releases/download/1.5.3/http-file-server_1.5.3_osx_x86_64.tar.gz | tar xz
+curl -L https://github.com/sgreben/http-file-server/releases/download/1.6.0/http-file-server_1.6.0_osx_x86_64.tar.gz | tar xz
 
 # Windows
-curl -LO https://github.com/sgreben/http-file-server/releases/download/1.5.3/http-file-server_1.5.3_windows_x86_64.zip
-unzip http-file-server_1.5.3_windows_x86_64.zip
+curl -LO https://github.com/sgreben/http-file-server/releases/download/1.6.0/http-file-server_1.6.0_windows_x86_64.zip
+unzip http-file-server_1.6.0_windows_x86_64.zip
 ```
 
 ## Use it
@@ -118,6 +128,10 @@ Usage of http-file-server:
     	(alias for -route)
   -route value
     	a route definition ROUTE=PATH (ROUTE defaults to basename of PATH if omitted)
+  -ssl-cert string
+    	path to SSL server certificate (environment variable "SSL_CERTIFICATE")
+  -ssl-key string
+    	path to SSL private key (environment variable "SSL_KEY")
   -u	(alias for -uploads)
   -uploads
     	allow uploads (environment variable "UPLOADS")

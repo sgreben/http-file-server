@@ -13,21 +13,25 @@ import (
 )
 
 const (
-	defaultAddr            = ":8080"
-	addrEnvVarName         = "ADDR"
-	portEnvVarName         = "PORT"
-	quietEnvVarName        = "QUIET"
-	allowUploadsEnvVarName = "UPLOADS"
-	rootRoute              = "/"
+	addrEnvVarName           = "ADDR"
+	allowUploadsEnvVarName   = "UPLOADS"
+	defaultAddr              = ":8080"
+	portEnvVarName           = "PORT"
+	quietEnvVarName          = "QUIET"
+	rootRoute                = "/"
+	sslCertificateEnvVarName = "SSL_CERTIFICATE"
+	sslKeyEnvVarName         = "SSL_KEY"
 )
 
 var (
 	addrFlag         = os.Getenv(addrEnvVarName)
+	allowUploadsFlag = os.Getenv(allowUploadsEnvVarName) == "true"
 	portFlag64, _    = strconv.ParseInt(os.Getenv(portEnvVarName), 10, 64)
 	portFlag         = int(portFlag64)
 	quietFlag        = os.Getenv(quietEnvVarName) == "true"
-	allowUploadsFlag = os.Getenv(allowUploadsEnvVarName) == "true"
 	routesFlag       routes
+	sslCertificate   = os.Getenv(sslCertificateEnvVarName)
+	sslKey           = os.Getenv(sslKeyEnvVarName)
 )
 
 func init() {
@@ -46,6 +50,8 @@ func init() {
 	flag.BoolVar(&allowUploadsFlag, "u", allowUploadsFlag, "(alias for -uploads)")
 	flag.Var(&routesFlag, "route", routesFlag.help())
 	flag.Var(&routesFlag, "r", "(alias for -route)")
+	flag.StringVar(&sslCertificate, "ssl-cert", sslCertificate, fmt.Sprintf("path to SSL server certificate (environment variable %q)", sslCertificateEnvVarName))
+	flag.StringVar(&sslKey, "ssl-key", sslKey, fmt.Sprintf("path to SSL private key (environment variable %q)", sslKeyEnvVarName))
 	flag.Parse()
 	if quietFlag {
 		log.SetOutput(ioutil.Discard)
@@ -76,7 +82,7 @@ func server(addr string, routes routes) error {
 	paths := make(map[string]string)
 
 	if len(routes.Values) == 0 {
-		routes.Set(".")
+		_ = routes.Set(".")
 	}
 
 	for _, route := range routes.Values {
@@ -103,6 +109,10 @@ func server(addr string, routes routes) error {
 	binaryPath, _ := os.Executable()
 	if binaryPath == "" {
 		binaryPath = "server"
+	}
+	if sslCertificate != "" && sslKey != "" {
+		log.Printf("%s (HTTPS) listening on %q", filepath.Base(binaryPath), addr)
+		return http.ListenAndServeTLS(addr, sslCertificate, sslKey, mux)
 	}
 	log.Printf("%s listening on %q", filepath.Base(binaryPath), addr)
 	return http.ListenAndServe(addr, mux)

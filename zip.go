@@ -20,6 +20,9 @@ func zip(w io.Writer, path string) error {
 		}
 		defer file.Close()
 		path, err = filepath.Rel(basePath, path)
+		if err != nil {
+			return err
+		}
 		zw, err := w.Create(path)
 		if err != nil {
 			return err

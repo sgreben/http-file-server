@@ -116,39 +116,41 @@ var (
 	directoryListingTemplate = template.Must(template.New("").Parse(directoryListingTemplateText))
 )
 
-func (f *fileHandler) serveStatus(w http.ResponseWriter, r *http.Request, status int) {
+func (f *fileHandler) serveStatus(w http.ResponseWriter, r *http.Request, status int) error {
 	w.WriteHeader(status)
-	w.Write([]byte(http.StatusText(status)))
+	_, err := w.Write([]byte(http.StatusText(status)))
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (f *fileHandler) serveTarGz(w http.ResponseWriter, r *http.Request, path string) {
+func (f *fileHandler) serveTarGz(w http.ResponseWriter, r *http.Request, path string) error {
 	w.Header().Set("Content-Type", tarGzContentType)
 	name := filepath.Base(path) + ".tar.gz"
 	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, name))
-	tarGz(w, path)
+	return tarGz(w, path)
 }
 
-func (f *fileHandler) serveZip(w http.ResponseWriter, r *http.Request, osPath string) {
+func (f *fileHandler) serveZip(w http.ResponseWriter, r *http.Request, osPath string) error {
 	w.Header().Set("Content-Type", zipContentType)
 	name := filepath.Base(osPath) + ".zip"
 	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, name))
-	zip(w, osPath)
+	return zip(w, osPath)
 }
 
-func (f *fileHandler) serveDir(w http.ResponseWriter, r *http.Request, osPath string) {
+func (f *fileHandler) serveDir(w http.ResponseWriter, r *http.Request, osPath string) error {
 	d, err := os.Open(osPath)
 	if err != nil {
-		f.serveStatus(w, r, http.StatusInternalServerError)
-		return
+		return err
 	}
 	files, err := d.Readdir(-1)
 	if err != nil {
-		f.serveStatus(w, r, http.StatusInternalServerError)
-		return
+		return err
 	}
 	sort.Slice(files, func(i, j int) bool { return files[i].Name() < files[j].Name() })
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	directoryListingTemplate.Execute(w, directoryListingData{
+	return directoryListingTemplate.Execute(w, directoryListingData{
 		AllowUpload: f.allowUpload,
 		Title: func() string {
 			relPath, _ := filepath.Rel(f.path, osPath)
@@ -194,10 +196,9 @@ func (f *fileHandler) serveDir(w http.ResponseWriter, r *http.Request, osPath st
 	})
 }
 
-func (f *fileHandler) serveUploadTo(w http.ResponseWriter, r *http.Request, osPath string) {
+func (f *fileHandler) serveUploadTo(w http.ResponseWriter, r *http.Request, osPath string) error {
 	if err := r.ParseForm(); err != nil {
-		f.serveStatus(w, r, http.StatusInternalServerError)
-		return
+		return err
 	}
 	in, h, err := r.FormFile("file")
 	if err == http.ErrMissingFile {
@@ -205,22 +206,21 @@ func (f *fileHandler) serveUploadTo(w http.ResponseWriter, r *http.Request, osPa
 		w.WriteHeader(303)
 	}
 	if err != nil {
-		f.serveStatus(w, r, http.StatusInternalServerError)
-		return
+		return err
 	}
 	outPath := filepath.Join(osPath, filepath.Base(h.Filename))
 	out, err := os.OpenFile(outPath, os.O_CREATE|os.O_WRONLY, 0600)
-	defer out.Close()
 	if err != nil {
-		f.serveStatus(w, r, http.StatusInternalServerError)
-		return
+		return err
 	}
+	defer out.Close()
+
 	if _, err := io.Copy(out, in); err != nil {
-		f.serveStatus(w, r, http.StatusInternalServerError)
-		return
+		return err
 	}
 	w.Header().Set("Location", r.URL.String())
 	w.WriteHeader(303)
+	return nil
 }
 
 // ServeHTTP is http.Handler.ServeHTTP
@@ -239,19 +239,31 @@ func (f *fileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	info, err := os.Stat(osPath)
 	switch {
 	case os.IsNotExist(err):
-		f.serveStatus(w, r, http.StatusNotFound)
+		_ = f.serveStatus(w, r, http.StatusNotFound)
 	case os.IsPermission(err):
-		f.serveStatus(w, r, http.StatusForbidden)
+		_ = f.serveStatus(w, r, http.StatusForbidden)
 	case err != nil:
-		f.serveStatus(w, r, http.StatusInternalServerError)
+		_ = f.serveStatus(w, r, http.StatusInternalServerError)
 	case r.URL.Query().Get(zipKey) != "":
-		f.serveZip(w, r, osPath)
+		err := f.serveZip(w, r, osPath)
+		if err != nil {
+			_ = f.serveStatus(w, r, http.StatusInternalServerError)
+		}
 	case r.URL.Query().Get(tarGzKey) != "":
-		f.serveTarGz(w, r, osPath)
+		err := f.serveTarGz(w, r, osPath)
+		if err != nil {
+			_ = f.serveStatus(w, r, http.StatusInternalServerError)
+		}
 	case f.allowUpload && info.IsDir() && r.Method == http.MethodPost:
-		f.serveUploadTo(w, r, osPath)
+		err := f.serveUploadTo(w, r, osPath)
+		if err != nil {
+			_ = f.serveStatus(w, r, http.StatusInternalServerError)
+		}
 	case info.IsDir():
-		f.serveDir(w, r, osPath)
+		err := f.serveDir(w, r, osPath)
+		if err != nil {
+			_ = f.serveStatus(w, r, http.StatusInternalServerError)
+		}
 	default:
 		http.ServeFile(w, r, osPath)
 	}

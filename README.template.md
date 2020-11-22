@@ -13,6 +13,7 @@
   - [Serving multiple paths, setting the HTTP port via CLI arguments](#serving-multiple-paths-setting-the-http-port-via-cli-arguments)
   - [Setting the HTTP port via environment variables](#setting-the-http-port-via-environment-variables)
   - [Uploading files using cURL](#uploading-files-using-curl)
+  - [HTTPS (SSL/TLS)](#https-ssltls)
 - [Get it](#get-it)
   - [Using `go get`](#using-go-get)
   - [Pre-built binary](#pre-built-binary)
@@ -69,6 +70,15 @@ $ ./http-file-server -uploads /=/path/to/serve
 
 ```sh
 curl -LF "file=@example.txt" localhost:8080/path/to/upload/to
+```
+
+### HTTPS (SSL/TLS)
+
+To terminate SSL at the file server, set `-ssl-cert` (`SSL_CERTIFICATE`) and `-ssl-key` (`SSL_KEY`) to the respective files' paths:
+
+```sh
+$ ./http-file-server -port 8443 -ssl-cert server.crt -ssl-key server.key
+2020/03/10 22:00:54 http-file-server (HTTPS) listening on ":8443"
 ```
 
 ## Get it

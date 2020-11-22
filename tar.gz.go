@@ -22,6 +22,9 @@ func tarGz(w io.Writer, path string) error {
 		defer file.Close()
 		header := new(tar.Header)
 		path, err = filepath.Rel(basePath, path)
+		if err != nil {
+			return err
+		}
 		header.Name = path
 		header.Size = stat.Size()
 		header.Mode = int64(stat.Mode())
