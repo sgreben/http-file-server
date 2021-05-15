@@ -36,15 +36,17 @@ const directoryListingTemplateText = `
 </head>
 <body>
 <h1>{{ .Title }}</h1>
-{{ if .Files }}
+{{ if or .Files .AllowUpload }}
 <table>
 	<thead>
 		<th></th>
 		<th colspan=2 class=number>Size (bytes)</th>
 	</thead>
 	<tbody>
+	{{- if .Files }}
 	<tr><td colspan=3><a href="{{ .TarGzURL }}">.tar.gz of all files</a></td></tr>
 	<tr><td colspan=3><a href="{{ .ZipURL }}">.zip of all files</a></td></tr>
+	{{- end }}
 	{{- range .Files }}
 	<tr>
 		{{ if (not .IsDir) }}
