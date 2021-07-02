@@ -1,4 +1,4 @@
-package main
+package zip
 
 import (
 	zipper "archive/zip"
@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func zip(w io.Writer, path string) error {
+func Zip(w io.Writer, path string) error {
 	basePath := path
 	addFile := func(w *zipper.Writer, path string, stat os.FileInfo) error {
 		if stat.IsDir() {
