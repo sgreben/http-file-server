@@ -1,4 +1,4 @@
-package main
+package httpfileserver
 
 import (
 	"fmt"
@@ -13,6 +13,9 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/sgreben/httpfileserver/internal/targz"
+	"github.com/sgreben/httpfileserver/internal/zip"
 )
 
 const (
@@ -29,6 +32,7 @@ const (
 
 const directoryListingTemplateText = `
 <html>
+<meta name="google" content="notranslate"/>
 <head>
 	<title>{{ .Title }}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -131,14 +135,14 @@ func (f *fileHandler) serveTarGz(w http.ResponseWriter, r *http.Request, path st
 	w.Header().Set("Content-Type", tarGzContentType)
 	name := filepath.Base(path) + ".tar.gz"
 	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, name))
-	return tarGz(w, path)
+	return targz.TarGz(w, path)
 }
 
 func (f *fileHandler) serveZip(w http.ResponseWriter, r *http.Request, osPath string) error {
 	w.Header().Set("Content-Type", zipContentType)
 	name := filepath.Base(osPath) + ".zip"
 	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, name))
-	return zip(w, osPath)
+	return zip.Zip(w, osPath)
 }
 
 func (f *fileHandler) serveDir(w http.ResponseWriter, r *http.Request, osPath string) error {
@@ -205,7 +209,7 @@ func (f *fileHandler) serveUploadTo(w http.ResponseWriter, r *http.Request, osPa
 	in, h, err := r.FormFile("file")
 	if err == http.ErrMissingFile {
 		w.Header().Set("Location", r.URL.String())
-		w.WriteHeader(303)
+		w.WriteHeader(http.StatusSeeOther)
 	}
 	if err != nil {
 		return err
@@ -221,7 +225,7 @@ func (f *fileHandler) serveUploadTo(w http.ResponseWriter, r *http.Request, osPa
 		return err
 	}
 	w.Header().Set("Location", r.URL.String())
-	w.WriteHeader(303)
+	w.WriteHeader(http.StatusSeeOther)
 	return nil
 }
 

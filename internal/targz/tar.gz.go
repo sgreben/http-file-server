@@ -1,4 +1,4 @@
-package main
+package targz
 
 import (
 	"archive/tar"
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func tarGz(w io.Writer, path string) error {
+func TarGz(w io.Writer, path string) error {
 	basePath := path
 	addFile := func(w *tar.Writer, path string, stat os.FileInfo) error {
 		if stat.IsDir() {

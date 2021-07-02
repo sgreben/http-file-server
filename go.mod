@@ -1,3 +1,3 @@
-module github.com/sgreben/http-file-server
+module github.com/sgreben/httpfileserver
 
 go 1.16
