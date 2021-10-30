@@ -15,6 +15,7 @@ import (
 const (
 	addrEnvVarName           = "ADDR"
 	allowUploadsEnvVarName   = "UPLOADS"
+	allowDeletesEnvVarName   = "DELETES"
 	defaultAddr              = ":8080"
 	portEnvVarName           = "PORT"
 	quietEnvVarName          = "QUIET"
@@ -26,6 +27,7 @@ const (
 var (
 	addrFlag         = os.Getenv(addrEnvVarName)
 	allowUploadsFlag = os.Getenv(allowUploadsEnvVarName) == "true"
+	allowDeletesFlag = os.Getenv(allowDeletesEnvVarName) == "true"
 	portFlag64, _    = strconv.ParseInt(os.Getenv(portEnvVarName), 10, 64)
 	portFlag         = int(portFlag64)
 	quietFlag        = os.Getenv(quietEnvVarName) == "true"
@@ -48,6 +50,8 @@ func init() {
 	flag.BoolVar(&quietFlag, "q", quietFlag, "(alias for -quiet)")
 	flag.BoolVar(&allowUploadsFlag, "uploads", allowUploadsFlag, fmt.Sprintf("allow uploads (environment variable %q)", allowUploadsEnvVarName))
 	flag.BoolVar(&allowUploadsFlag, "u", allowUploadsFlag, "(alias for -uploads)")
+	flag.BoolVar(&allowDeletesFlag, "deletes", allowDeletesFlag, fmt.Sprintf("allow deletes (environment variable %q)", allowDeletesEnvVarName))
+	flag.BoolVar(&allowDeletesFlag, "d", allowDeletesFlag, "(alias for -deletes)")
 	flag.Var(&routesFlag, "route", routesFlag.help())
 	flag.Var(&routesFlag, "r", "(alias for -route)")
 	flag.StringVar(&sslCertificate, "ssl-cert", sslCertificate, fmt.Sprintf("path to SSL server certificate (environment variable %q)", sslCertificateEnvVarName))
@@ -90,6 +94,7 @@ func server(addr string, routes routes) error {
 			route:       route.Route,
 			path:        route.Path,
 			allowUpload: allowUploadsFlag,
+			allowDelete: allowDeletesFlag,
 		}
 		paths[route.Route] = route.Path
 	}

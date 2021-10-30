@@ -112,6 +112,7 @@ type fileHandler struct {
 	route       string
 	path        string
 	allowUpload bool
+	allowDelete bool
 }
 
 var (
@@ -258,6 +259,11 @@ func (f *fileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	case f.allowUpload && info.IsDir() && r.Method == http.MethodPost:
 		err := f.serveUploadTo(w, r, osPath)
+		if err != nil {
+			_ = f.serveStatus(w, r, http.StatusInternalServerError)
+		}
+	case f.allowDelete && !info.IsDir() && r.Method == http.MethodDelete:
+		err := os.Remove(osPath)
 		if err != nil {
 			_ = f.serveStatus(w, r, http.StatusInternalServerError)
 		}
