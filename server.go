@@ -112,6 +112,7 @@ type fileHandler struct {
 	route       string
 	path        string
 	allowUpload bool
+	allowDelete bool
 }
 
 var (
@@ -246,6 +247,10 @@ func (f *fileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		_ = f.serveStatus(w, r, http.StatusForbidden)
 	case err != nil:
 		_ = f.serveStatus(w, r, http.StatusInternalServerError)
+	case !f.allowDelete && r.Method == http.MethodDelete:
+		_ = f.serveStatus(w, r, http.StatusForbidden)
+	case !f.allowUpload && r.Method == http.MethodPost:
+		_ = f.serveStatus(w, r, http.StatusForbidden)
 	case r.URL.Query().Get(zipKey) != "":
 		err := f.serveZip(w, r, osPath)
 		if err != nil {
@@ -258,6 +263,11 @@ func (f *fileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	case f.allowUpload && info.IsDir() && r.Method == http.MethodPost:
 		err := f.serveUploadTo(w, r, osPath)
+		if err != nil {
+			_ = f.serveStatus(w, r, http.StatusInternalServerError)
+		}
+	case f.allowDelete && !info.IsDir() && r.Method == http.MethodDelete:
+		err := os.Remove(osPath)
 		if err != nil {
 			_ = f.serveStatus(w, r, http.StatusInternalServerError)
 		}
