@@ -59,7 +59,7 @@ const directoryListingTemplateText = `
 	</tr>
 	{{- end }}
 	{{- if .AllowUpload }}
-	<tr><td colspan=3><form method="post" enctype="multipart/form-data"><input required name="file" type="file"/><input value="Upload" type="submit"/></form></td></tr>
+	<tr><td colspan=3><form method="post" enctype="multipart/form-data"><input required name="file" type="file" multiple/><input value="Upload" type="submit"/></form></td></tr>
 	{{- end }}
 	</tbody>
 </table>
@@ -200,26 +200,27 @@ func (f *fileHandler) serveDir(w http.ResponseWriter, r *http.Request, osPath st
 }
 
 func (f *fileHandler) serveUploadTo(w http.ResponseWriter, r *http.Request, osPath string) error {
-	if err := r.ParseForm(); err != nil {
-		return err
-	}
-	in, h, err := r.FormFile("file")
-	if err == http.ErrMissingFile {
-		w.Header().Set("Location", r.URL.String())
-		w.WriteHeader(303)
-	}
+	mr, err := r.MultipartReader()
 	if err != nil {
 		return err
 	}
-	outPath := filepath.Join(osPath, filepath.Base(h.Filename))
-	out, err := os.OpenFile(outPath, os.O_CREATE|os.O_WRONLY, 0600)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	if _, err := io.Copy(out, in); err != nil {
-		return err
+	for {
+		part, err := mr.NextPart()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return err
+		} else if part.FormName() == "file" {
+			outPath := filepath.Join(osPath, filepath.Base(part.FileName()))
+			out, err := os.OpenFile(outPath, os.O_CREATE|os.O_WRONLY, 0600)
+			if err != nil {
+				return err
+			}
+			defer out.Close()
+			if _, err := io.Copy(out, part); err != nil {
+				return err
+			}
+		}
 	}
 	w.Header().Set("Location", r.URL.String())
 	w.WriteHeader(303)
