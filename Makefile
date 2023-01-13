@@ -1,9 +1,11 @@
 VERSION = 1.6.1
 
-APP      := http-file-server
-PACKAGES := $(shell go list -f {{.Dir}} ./...)
-GOFILES  := $(addsuffix /*.go,$(PACKAGES))
-GOFILES  := $(wildcard $(GOFILES))
+APP      				:= http-file-server
+PACKAGES 				:= $(shell go list -f {{.Dir}} ./...)
+GOFILES 			  := $(addsuffix /*.go,$(PACKAGES))
+GOFILES  				:= $(wildcard $(GOFILES))
+DOCKER_REPONAME := gcr.io/sgreben/http-file-server
+DOCKER_WHOLETAG := $(DOCKER_REPONAME):$(VERSION)
 
 .PHONY: clean release README.md
 
@@ -67,3 +69,9 @@ release/$(APP)_$(VERSION)_linux_arm64.tar.gz: binaries/linux_arm64/$(APP)
 
 binaries/linux_arm64/$(APP): $(GOFILES)
 	GOOS=linux GOARCH=arm64 go build -ldflags "-X main.version=$(VERSION)" -o binaries/linux_arm64/$(APP) .
+
+docker: $(GOFILES)
+	docker build -t $(DOCKER_WHOLETAG) .
+
+docker_buildkit_all: $(GOFILES)
+  docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t $(DOCKER_WHOLETAG) .
