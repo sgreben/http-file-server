@@ -74,4 +74,4 @@ docker: $(GOFILES)
 	docker build -t $(DOCKER_WHOLETAG) .
 
 docker_buildkit_all: $(GOFILES)
-  docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t $(DOCKER_WHOLETAG) .
+  docker buildx build --platform linux/amd64,linux/arm64 -t $(DOCKER_WHOLETAG) .
